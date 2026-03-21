@@ -1,39 +1,30 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from app.database import engine, Base
-from app.routers import topics, progress
+from app.routers import topics, progress, problems, auth
 
-# Create all tables on startup (safe to call repeatedly)
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(
-    title="DSA Tracker API",
-    description="Backend for the DSA Roadmap + LeetCode Tracker",
-    version="1.0.0",
-)
+app = FastAPI(title="DSA Tracker API", version="2.0.0")
 
-# ─── CORS ────────────────────────────────────────────────────────
-# Allows the React dev server (port 5173) to call this API (port 8000)
-# In production, replace "*" with your actual frontend domain
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:3000",
+        "https://dsa-tracker-1w5i.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ─── Routers ─────────────────────────────────────────────────────
+app.include_router(auth.router)
 app.include_router(topics.router)
 app.include_router(progress.router)
-
+app.include_router(problems.router)
 
 @app.get("/")
 def root():
-    return {"message": "DSA Tracker API is running ✅"}
-
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+    return {"message": "DSA Tracker API v2 ✅"}
