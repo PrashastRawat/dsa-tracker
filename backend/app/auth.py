@@ -2,7 +2,7 @@ import os
 import httpx
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -14,7 +14,6 @@ ACCESS_TOKEN_EXPIRE_DAYS = 30
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5174")
 
 bearer_scheme = HTTPBearer(auto_error=False)
 
@@ -42,21 +41,19 @@ def get_current_user(
     return user
 
 
-async def exchange_code_for_user(code: str) -> dict:
-    """Exchange Google auth code for user profile info."""
+async def exchange_code_for_user(code: str, backend_url: str) -> dict:
+    redirect_uri = f"{backend_url}/auth/callback"
     async with httpx.AsyncClient() as client:
-        # Step 1: Get tokens from Google
         token_resp = await client.post("https://oauth2.googleapis.com/token", data={
             "code": code,
             "client_id": GOOGLE_CLIENT_ID,
             "client_secret": GOOGLE_CLIENT_SECRET,
-            "redirect_uri": "http://localhost:8000/auth/callback",
+            "redirect_uri": redirect_uri,
             "grant_type": "authorization_code",
         })
         token_resp.raise_for_status()
         tokens = token_resp.json()
 
-        # Step 2: Get user info from Google
         userinfo_resp = await client.get(
             "https://www.googleapis.com/oauth2/v2/userinfo",
             headers={"Authorization": f"Bearer {tokens['access_token']}"},
