@@ -1,10 +1,16 @@
 services:
   - type: web
     name: dsa-tracker-api
-    runtime: python
+    runtime: docker
     rootDir: backend
-    buildCommand: pip install --only-binary=pydantic-core,cryptography -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
+      - key: DATABASE_URL
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
