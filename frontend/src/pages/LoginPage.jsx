@@ -96,7 +96,7 @@ export default function LoginPage() {
           {m.sub}
         </p>
 
-        <a href="http://localhost:8000/auth/login" style={{
+        <a href={`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/auth/login`}   style={{
           display: "flex", alignItems: "center", justifyContent: "center", gap: 14,
           background: "var(--login-btn-bg)", color: "var(--login-btn-color)",
           textDecoration: "none", padding: "16px 32px", borderRadius: 14,
