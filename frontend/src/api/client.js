@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || "http://127.0.0.1:8000", });
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000",
+});
 
 // Attach token to every request automatically
 api.interceptors.request.use((config) => {
@@ -22,7 +24,7 @@ api.interceptors.response.use(
 );
 
 export const fetchMe = () => api.get("/auth/me").then((r) => r.data);
-export const fetchTopics = () => api.get("/topics").then((r) => r.data);
+export const fetchTopics = () => api.get("/topics/").then((r) => r.data);
 export const fetchTopic = (slug) => api.get(`/topics/${slug}`).then((r) => r.data);
 export const fetchStats = () => api.get("/stats/summary").then((r) => r.data);
 export const updateProgress = (problemId, status) =>

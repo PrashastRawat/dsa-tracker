@@ -3,16 +3,14 @@ import { updateProgress } from "../api/client";
 
 const STATUSES = ["not_started", "attempted", "solved"];
 const STATUS_STYLE = {
-  not_started: { bg: "transparent", color: "#6b6b80", label: "Not Started" },
-  attempted:   { bg: "#fbbf2422", color: "#fbbf24", label: "Attempted" },
-  solved:      { bg: "#4ade8022", color: "#4ade80", label: "Solved" },
+  not_started: { label: "Not Started" },
+  attempted:   { label: "Attempted"   },
+  solved:      { label: "Solved"      },
 };
-const DIFF_COLOR = { easy: "var(--easy)", medium: "var(--medium)", hard: "var(--hard)" };
 
 export default function ProblemRow({ problem, onStatusChange, onDelete }) {
   const [status, setStatus] = useState(problem.status || "not_started");
   const [loading, setLoading] = useState(false);
-  const s = STATUS_STYLE[status];
 
   async function cycleStatus() {
     const next = STATUSES[(STATUSES.indexOf(status) + 1) % STATUSES.length];
@@ -24,58 +22,89 @@ export default function ProblemRow({ problem, onStatusChange, onDelete }) {
     } finally { setLoading(false); }
   }
 
+  // Colors fully driven by CSS vars — always contrast correctly
+  const circleColor = status === "solved" ? "var(--easy)" : status === "attempted" ? "var(--medium)" : "var(--border)";
+  const circleTextColor = status === "solved" ? "var(--bg)" : status === "attempted" ? "var(--bg)" : "transparent";
+  const badgeBg = status === "solved" ? "var(--easy)" : status === "attempted" ? "var(--medium)" : "var(--surface2)";
+  const badgeText = status === "not_started" ? "var(--text-muted)" : "var(--bg)";
+  const diffColor = { easy: "var(--easy)", medium: "var(--medium)", hard: "var(--hard)" };
+
   return (
     <div style={{
-      display: "flex", alignItems: "center", gap: 14, padding: "12px 18px",
+      display: "flex", alignItems: "center", gap: 14, padding: "13px 20px",
       borderBottom: "1px solid var(--border)", transition: "background 0.15s",
-      background: status === "solved" ? "#4ade8006" : "transparent",
     }}
-      onMouseEnter={e => e.currentTarget.style.background = status === "solved" ? "#4ade8010" : "var(--surface2)"}
-      onMouseLeave={e => e.currentTarget.style.background = status === "solved" ? "#4ade8006" : "transparent"}
+      onMouseEnter={e => e.currentTarget.style.background = "var(--surface2)"}
+      onMouseLeave={e => e.currentTarget.style.background = "transparent"}
     >
-      {/* Status circle */}
-      <button onClick={cycleStatus} disabled={loading} title="Click to cycle status" style={{
-        width: 20, height: 20, borderRadius: "50%", border: `2px solid ${s.color}`,
-        background: status === "solved" ? s.color : "transparent",
-        cursor: "pointer", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+      {/* Circle toggle */}
+      <button onClick={cycleStatus} disabled={loading} title="Click to cycle" style={{
+        width: 24, height: 24, borderRadius: "50%",
+        border: `2px solid ${circleColor}`,
+        background: status !== "not_started" ? circleColor : "transparent",
+        cursor: "pointer", flexShrink: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
         transition: "all 0.15s", opacity: loading ? 0.5 : 1,
       }}>
-        {status === "solved" && <svg width="9" height="9" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#0a0a0f" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>}
-        {status === "attempted" && <div style={{ width: 7, height: 7, borderRadius: "50%", background: s.color }} />}
+        {status === "solved" && (
+          <svg width="11" height="11" viewBox="0 0 10 10">
+            <polyline points="1.5,5 4,7.5 8.5,2.5" stroke="var(--bg)" strokeWidth="2" fill="none" strokeLinecap="round"/>
+          </svg>
+        )}
+        {status === "attempted" && (
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--bg)" }} />
+        )}
       </button>
 
       {/* Title */}
       <a href={problem.leetcode_url} target="_blank" rel="noopener noreferrer" style={{
-        flex: 1, fontSize: 13, fontWeight: 500, textDecoration: status === "solved" ? "line-through" : "none",
-        textDecorationColor: "var(--text-muted)", color: status === "solved" ? "var(--text-muted)" : "var(--text)",
-        display: "flex", alignItems: "center", gap: 6,
+        flex: 1, fontSize: 14, fontWeight: 600,
+        textDecoration: status === "solved" ? "line-through" : "none",
+        textDecorationColor: "var(--text-muted)",
+        color: status === "solved" ? "var(--text-muted)" : "var(--card-text)",
+        display: "flex", alignItems: "center", gap: 8, fontFamily: "DM Sans, sans-serif",
       }}>
         {problem.title}
-        {problem.is_custom && <span style={{ fontSize: 9, padding: "1px 5px", borderRadius: 4, background: "var(--accent)33", color: "var(--accent)", fontWeight: 600 }}>CUSTOM</span>}
-        <svg width="10" height="10" viewBox="0 0 11 11" style={{ opacity: 0.35, flexShrink: 0 }}>
-          <path d="M2 9L9 2M4 2h5v5" stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
+        {problem.is_custom && (
+          <span style={{
+            fontSize: 9, padding: "2px 7px", borderRadius: 4, letterSpacing: 1,
+            background: "var(--accent)", color: "var(--btn-color)", fontWeight: 800,
+          }}>CUSTOM</span>
+        )}
+        <svg width="11" height="11" viewBox="0 0 11 11" style={{ opacity: 0.35, flexShrink: 0 }}>
+          <path d="M2 9L9 2M4 2h5v5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
         </svg>
       </a>
 
       {/* Difficulty */}
-      <span style={{ fontSize: 11, fontFamily: "Space Mono, monospace", color: DIFF_COLOR[problem.difficulty], width: 52, textAlign: "right", textTransform: "capitalize" }}>
+      <span className="font-label" style={{
+        fontSize: 10, color: diffColor[problem.difficulty],
+        width: 60, textAlign: "right", textTransform: "uppercase", letterSpacing: 1,
+        fontWeight: 700,
+      }}>
         {problem.difficulty}
       </span>
 
       {/* Status badge */}
-      <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 20, background: s.bg, color: s.color, fontWeight: 500, width: 90, textAlign: "center", flexShrink: 0, border: `1px solid ${s.color}44` }}>
-        {s.label}
+      <span style={{
+        fontSize: 11, padding: "4px 12px", borderRadius: 20, fontWeight: 800,
+        background: badgeBg, color: badgeText,
+        width: 100, textAlign: "center", flexShrink: 0,
+        fontFamily: "DM Sans, sans-serif", letterSpacing: 0.3,
+        border: status === "not_started" ? "1px solid var(--border)" : "none",
+      }}>
+        {STATUS_STYLE[status].label}
       </span>
 
-      {/* Delete button for custom problems */}
+      {/* Delete */}
       <div style={{ width: 24, display: "flex", justifyContent: "center" }}>
         {onDelete && (
-          <button onClick={onDelete} title="Delete custom problem" style={{
-            background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer",
-            fontSize: 14, opacity: 0.5, transition: "opacity 0.15s", padding: 2,
+          <button onClick={onDelete} style={{
+            background: "none", border: "none", color: "var(--text-muted)",
+            cursor: "pointer", fontSize: 14, opacity: 0.4, transition: "all 0.15s", padding: 2,
           }}
             onMouseEnter={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.color = "var(--hard)"; }}
-            onMouseLeave={e => { e.currentTarget.style.opacity = "0.5"; e.currentTarget.style.color = "var(--text-muted)"; }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = "0.4"; e.currentTarget.style.color = "var(--text-muted)"; }}
           >✕</button>
         )}
       </div>

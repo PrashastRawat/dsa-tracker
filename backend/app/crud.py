@@ -128,11 +128,11 @@ def enrich_topic(db: Session, topic: models.Topic, user_id: int) -> dict:
             "id": p.id,
             "topic_id": p.topic_id,
             "title": p.title,
-            "difficulty": p.difficulty,
+            "difficulty": p.difficulty.value,
             "leetcode_url": p.leetcode_url,
             "order_index": p.order_index,
             "is_custom": p.is_custom,
-            "status": status,
+            "status": status.value,
         })
     return {
         "id": topic.id,

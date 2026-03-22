@@ -1,45 +1,183 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg: #0a0a0f;
-  --surface: #111118;
-  --surface2: #1a1a24;
-  --border: #2a2a38;
-  --accent: #7c6aff;
-  --accent2: #ff6a6a;
-  --text: #e8e8f0;
-  --text-muted: #6b6b80;
-  --easy: #4ade80;
-  --medium: #fb923c;
-  --hard: #f87171;
-  --solved: #4ade80;
-  --attempted: #fbbf24;
-  --not-started: #3a3a4a;
-}
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  min-height: 100vh;
-}
-
+body { font-family: 'DM Sans', sans-serif; min-height: 100vh; transition: background 0.4s, color 0.4s; }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--surface); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
 
-.font-mono { font-family: 'Space Mono', monospace; }
+.font-heading { font-family: 'Rubik Dirt', cursive; }
+.font-content { font-family: 'Medula One', serif; }
+.font-label   { font-family: 'Rubik Iso', cursive; }
 
+/* ══════════════════════════════════════════════════════════
+   🏎️  DARK MODE — RED BULL F1
+   Dark navy/black bg → white/cyan text (MAX CONTRAST)
+   ══════════════════════════════════════════════════════════ */
+:root, [data-theme="f1"] {
+  --bg:        #00040f;
+  --surface:   #000818;
+  --surface2:  #000d24;
+  --border:    #001440;
+
+  --accent:        #00a3ff;
+  --accent2:       #ff1801;
+  --text:          #ffffff;        /* white on dark navy */
+  --text-muted:    #7aafd4;        /* soft blue-white */
+  --text-on-accent: #000000;       /* black text ON blue buttons */
+  --text-on-card:   #ffffff;       /* white on dark cards */
+
+  --easy:      #00e5ff;
+  --medium:    #ffc300;
+  --hard:      #ff1801;
+
+  --nav-active-bg:    #00a3ff22;
+  --nav-active-color: #00e5ff;
+  --btn-bg:           #00a3ff;
+  --btn-color:        #000000;     /* black on blue button */
+  --heading-color:    #ffffff;
+  --subheading-color: #00e5ff;
+  --card-bg:          #000818;
+  --card-text:        #ffffff;
+  --card-glow:        #00a3ff22;
+  --progress-start:   #00a3ff;
+  --progress-end:     #ff1801;
+  --login-btn-bg:     #00a3ff;
+  --login-btn-color:  #000000;
+  --badge-bg:         #00040f;
+  --badge-text:       #00e5ff;
+  --sidebar-bg:       #000818;
+  --sidebar-text:     #ffffff;
+}
+
+/* ══════════════════════════════════════════════════════════
+   🎯  LIGHT MODE — VALORANT
+   White/yellow bg → BLACK text (MAX CONTRAST)
+   ══════════════════════════════════════════════════════════ */
+[data-theme="valorant"] {
+  --bg:        #fffde0;            /* warm yellow-white */
+  --surface:   #ffffff;            /* pure white cards */
+  --surface2:  #fff8c0;            /* slightly yellow hover */
+  --border:    #ffd700;            /* gold borders */
+
+  --accent:        #cc0010;        /* deep valorant red */
+  --accent2:       #ffd700;        /* gold */
+  --text:          #000000;        /* BLACK on white — max contrast */
+  --text-muted:    #555500;        /* dark olive on yellow bg */
+  --text-on-accent: #ffffff;       /* white ON red buttons */
+  --text-on-card:   #000000;       /* black on white cards */
+
+  --easy:      #006600;            /* dark green on white */
+  --medium:    #cc6600;            /* dark orange on white */
+  --hard:      #cc0010;            /* dark red on white */
+
+  --nav-active-bg:    #cc001018;
+  --nav-active-color: #cc0010;
+  --btn-bg:           #cc0010;
+  --btn-color:        #ffffff;     /* white ON red */
+  --heading-color:    #000000;     /* black heading on yellow bg */
+  --subheading-color: #cc0010;
+  --card-bg:          #ffffff;
+  --card-text:        #000000;     /* black on white */
+  --card-glow:        #cc001015;
+  --progress-start:   #cc0010;
+  --progress-end:     #ffd700;
+  --login-btn-bg:     #cc0010;
+  --login-btn-color:  #ffffff;
+  --badge-bg:         #ffd700;
+  --badge-text:       #000000;     /* black on yellow badge */
+  --sidebar-bg:       #ffffff;
+  --sidebar-text:     #000000;
+}
+
+/* ══════════════════════════════════════════════════════════
+   🌸  SAKURA MODE
+   Soft pink-white bg → DARK PINK/BLACK text (MAX CONTRAST)
+   ══════════════════════════════════════════════════════════ */
+[data-theme="sakura"] {
+  --bg:        #fff0f5;
+  --surface:   #ffffff;
+  --surface2:  #ffe4ef;
+  --border:    #ffb3cc;
+
+  --accent:        #c0003a;        /* deep crimson — visible on white */
+  --accent2:       #ff4d88;
+  --text:          #1a0010;        /* very dark on pink-white — max contrast */
+  --text-muted:    #8b3a5a;
+  --text-on-accent: #ffffff;       /* white ON crimson */
+  --text-on-card:   #1a0010;       /* dark on white cards */
+
+  --easy:      #005c30;            /* dark green on white */
+  --medium:    #7a3d00;            /* dark brown-orange */
+  --hard:      #c0003a;
+
+  --nav-active-bg:    #c0003a18;
+  --nav-active-color: #c0003a;
+  --btn-bg:           #c0003a;
+  --btn-color:        #ffffff;
+  --heading-color:    #c0003a;     /* crimson heading on white */
+  --subheading-color: #1a0010;
+  --card-bg:          #ffffff;
+  --card-text:        #1a0010;
+  --card-glow:        #ff4d8820;
+  --progress-start:   #ff4d88;
+  --progress-end:     #c0003a;
+  --login-btn-bg:     #c0003a;
+  --login-btn-color:  #ffffff;
+  --badge-bg:         #ffe4ef;
+  --badge-text:       #c0003a;
+  --sidebar-bg:       #ffffff;
+  --sidebar-text:     #1a0010;
+}
+
+/* ══════════════════════════════════════════════════════════
+   💊  MATRIX MODE
+   Pure black bg → BRIGHT GREEN text (MAX CONTRAST)
+   ══════════════════════════════════════════════════════════ */
+[data-theme="monster"] {
+  --bg:        #000000;
+  --surface:   #050f05;
+  --surface2:  #091509;
+  --border:    #0f3a0f;
+
+  --accent:        #00ff00;        /* pure matrix green */
+  --accent2:       #aaff00;
+  --text:          #ccffcc;        /* light green on black — max contrast */
+  --text-muted:    #3a8a3a;
+  --text-on-accent: #000000;       /* black ON green */
+  --text-on-card:   #ccffcc;       /* light green on dark cards */
+
+  --easy:      #00ff00;
+  --medium:    #aaff00;
+  --hard:      #ff4400;
+
+  --nav-active-bg:    #00ff0015;
+  --nav-active-color: #00ff00;
+  --btn-bg:           #00ff00;
+  --btn-color:        #000000;     /* black ON green */
+  --heading-color:    #00ff00;
+  --subheading-color: #aaff00;
+  --card-bg:          #050f05;
+  --card-text:        #ccffcc;
+  --card-glow:        #00ff0018;
+  --progress-start:   #00ff00;
+  --progress-end:     #aaff00;
+  --login-btn-bg:     #00ff00;
+  --login-btn-color:  #000000;
+  --badge-bg:         #000000;
+  --badge-text:       #00ff00;
+  --sidebar-bg:       #050f05;
+  --sidebar-text:     #ccffcc;
+}
+
+/* ── ANIMATIONS ─────────────────────────────────────────── */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.fade-in { animation: fadeIn 0.3s ease forwards; }
+.fade-in { animation: fadeIn 0.4s ease forwards; }
 
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
@@ -49,5 +187,5 @@ body {
   background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
-  border-radius: 6px;
+  border-radius: 8px;
 }

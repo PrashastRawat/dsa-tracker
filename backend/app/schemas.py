@@ -61,8 +61,7 @@ class TopicSummary(TopicBase):
     total_problems: int = 0
     solved_count: int = 0
     completion_pct: float = 0.0
-    model_config = {"from_attributes": True}
-
+    model_config = {"from_attributes": True, "use_enum_values": True}
 
 # ─── Progress ────────────────────────────────────────────────────
 
